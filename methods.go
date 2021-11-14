@@ -93,9 +93,9 @@ func NewMethodHandler(h http.Handler) *MethodHandler {
 
 // ServeHTTP implements the http.Handler interface.
 func (h *MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	notAllowed := func() {
-		errtxt := http.StatusText(http.StatusMethodNotAllowed) + ": " + r.Method
-		http.Error(w, errtxt, http.StatusMethodNotAllowed)
+	badRequest := func() {
+		errtxt := http.StatusText(http.StatusBadRequest) + ": " + r.Method
+		http.Error(w, errtxt, http.StatusBadRequest)
 	}
 	switch r.Method {
 	case http.MethodGet:
@@ -103,55 +103,55 @@ func (h *MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			hh.ServeHTTPGet(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodPost:
 		if hh, ok := h.handler.(PostHandler); ok {
 			hh.ServeHTTPPost(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodPut:
 		if hh, ok := h.handler.(PutHandler); ok {
 			hh.ServeHTTPPut(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodDelete:
 		if hh, ok := h.handler.(DeleteHandler); ok {
 			hh.ServeHTTPDelete(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodHead:
 		if hh, ok := h.handler.(HeadHandler); ok {
 			hh.ServeHTTPHead(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodPatch:
 		if hh, ok := h.handler.(PatchHandler); ok {
 			hh.ServeHTTPPatch(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodConnect:
 		if hh, ok := h.handler.(ConnectHandler); ok {
 			hh.ServeHTTPConnect(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodOptions:
 		if hh, ok := h.handler.(OptionsHandler); ok {
 			hh.ServeHTTPOptions(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	case http.MethodTrace:
 		if hh, ok := h.handler.(TraceHandler); ok {
 			hh.ServeHTTPTrace(w, r)
 			return
 		}
-		notAllowed()
+		badRequest()
 	default:
 		// Fall back to default for any other method.
 		h.handler.ServeHTTP(w, r)

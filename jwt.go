@@ -130,11 +130,11 @@ func (h *JWTHandler) deny(w http.ResponseWriter, r *http.Request, msg string, st
 		"message":    msg,
 	}
 	accept := r.Header.Get(HeaderAccept)
+	w.WriteHeader(statusCode)
 	err := WriteBody(w, accept, feedback)
 	if err != nil {
 		h.logger.Printf("JWT handler: %v", err)
 	}
-	w.WriteHeader(statusCode)
 }
 
 // EOF

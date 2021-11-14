@@ -1,4 +1,5 @@
-tideland.dev/go/audit v0.5.0 h1:RlZc/MO8bPfeCd5hDCi+2Pc0FYix4c/z2SnRGDgUjtU=
 tideland.dev/go/audit v0.5.0/go.mod h1:sVGr3PZ9JS/7nHJAs6s3G6CVMpMncFfd6VIP5rHnsLs=
+tideland.dev/go/audit v0.5.1 h1:XtzV/L1KFJ2JzLjbNE1z9zeY+4noWqHW2rwlaZjGM7c=
+tideland.dev/go/audit v0.5.1/go.mod h1:sVGr3PZ9JS/7nHJAs6s3G6CVMpMncFfd6VIP5rHnsLs=
 tideland.dev/go/jwt v0.1.0 h1:t337P5rVZYnOrYPUIy+fzUBxLn98NLBEozBiY96aX5Q=
 tideland.dev/go/jwt v0.1.0/go.mod h1:arlEaN/OK/imHV/hVEN5b8RTDUhNwUQM6CdWMB9AE6Q=
