@@ -17,42 +17,54 @@ import (
 )
 
 //--------------------
-// RESOURCE IDENTIFIERS
+// RESOURCES
 //--------------------
 
-// ResourceID is a type that can be used to identify a resource.
-type ResourceID struct {
+// Resource identifies a resource in a URI path by name and ID.
+type Resource struct {
 	Name string
 	ID   string
 }
 
-// ResourceIDs is a type that can be used to identify multiple resources.
-type ResourceIDs []ResourceID
+// Resources is a number or resources in a URI path.
+type Resources []Resource
 
-// ParseResourceIDs parses a new ResourceID from a URI path.
-func ParseResourceIDs(r *http.Request, prefix string) ResourceIDs {
+// path returns the number of resource names concatenated with slashes
+// like they are stored in the nested multiplexer.
+func (ress Resources) path() string {
+	names := make([]string, len(ress))
+	for i, res := range ress {
+		names[i] = res.Name
+	}
+	return strings.Join(names, "/")
+}
+
+// PathToResources parses a new Resource from a URI path.
+func PathToResources(r *http.Request, prefix string) Resources {
+	// Remove prefix with and without trailing slash.
+	prefix = strings.TrimSuffix(prefix, "/")
 	trimmed := strings.TrimPrefix(r.URL.Path, prefix)
+	trimmed = strings.TrimPrefix(trimmed, "/")
+	// Now split the path.
 	parts := strings.Split(trimmed, "/")
 	if len(parts) == 0 {
 		return nil
 	}
-	var ids ResourceIDs
+	var ress Resources
 	var name string
 	for i, part := range parts {
 		switch {
-		case part == "":
-			continue
 		case i%2 == 0:
 			name = part
 		case i%2 == 1:
-			ids = append(ids, ResourceID{name, part})
+			ress = append(ress, Resource{name, part})
 			name = ""
 		}
 	}
 	if name != "" {
-		ids = append(ids, ResourceID{name, ""})
+		ress = append(ress, Resource{name, ""})
 	}
-	return ids
+	return ress
 }
 
 // EOF
