@@ -78,7 +78,7 @@ type TraceHandler interface {
 //--------------------
 
 // MethodHandler wraps a http.Handler implementing also individual httpx handler
-// interface. It distributes the requests to the handler methods based on a type
+// interfaces. It distributes the requests to the handler methods based on a type
 // switch In case of no matching method a http.ErrMethodNotAllowed is returned.
 type MethodHandler struct {
 	handler http.Handler
