@@ -19,7 +19,7 @@ import (
 // METHOD HANDLER INTERFACES
 //--------------------
 
-// GetHandler has to be implemented by a handler for HEAD requests
+// GetHandler has to be implemented by a handler for GET requests
 // dispatched through the MethodHandler.
 type GetHandler interface {
 	ServeHTTPGet(w http.ResponseWriter, r *http.Request)
