@@ -50,7 +50,7 @@ func (mux *NestedMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer mux.mu.RUnlock()
 
 	ress := PathToResources(r, mux.prefix)
-	path := ress.path()
+	path := ress.Path()
 	h, exists := mux.handlers[path]
 
 	if !exists {

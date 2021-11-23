@@ -29,9 +29,9 @@ type Resource struct {
 // Resources is a number or resources in a URI path.
 type Resources []Resource
 
-// path returns the number of resource names concatenated with slashes
+// Path returns the number of resource names concatenated with slashes
 // like they are stored in the nested multiplexer.
-func (ress Resources) path() string {
+func (ress Resources) Path() string {
 	names := make([]string, len(ress))
 	for i, res := range ress {
 		names[i] = res.Name
