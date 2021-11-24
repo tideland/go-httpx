@@ -39,6 +39,11 @@ func (ress Resources) Path() string {
 	return strings.Join(names, "/")
 }
 
+// IsPath check if the resources path matches a given path.
+func (ress Resources) IsPath(path string) bool {
+	return ress.Path() == path
+}
+
 // PathToResources parses a new Resource from a URI path.
 func PathToResources(r *http.Request, prefix string) Resources {
 	// Remove prefix with and without trailing slash.
