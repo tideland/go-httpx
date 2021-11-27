@@ -93,69 +93,56 @@ func NewMethodHandler(h http.Handler) *MethodHandler {
 
 // ServeHTTP implements the http.Handler interface.
 func (h *MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	badRequest := func() {
-		errtxt := http.StatusText(http.StatusBadRequest) + ": " + r.Method
-		http.Error(w, errtxt, http.StatusBadRequest)
-	}
 	switch r.Method {
 	case http.MethodGet:
 		if hh, ok := h.handler.(GetHandler); ok {
 			hh.ServeHTTPGet(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodPost:
 		if hh, ok := h.handler.(PostHandler); ok {
 			hh.ServeHTTPPost(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodPut:
 		if hh, ok := h.handler.(PutHandler); ok {
 			hh.ServeHTTPPut(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodDelete:
 		if hh, ok := h.handler.(DeleteHandler); ok {
 			hh.ServeHTTPDelete(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodHead:
 		if hh, ok := h.handler.(HeadHandler); ok {
 			hh.ServeHTTPHead(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodPatch:
 		if hh, ok := h.handler.(PatchHandler); ok {
 			hh.ServeHTTPPatch(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodConnect:
 		if hh, ok := h.handler.(ConnectHandler); ok {
 			hh.ServeHTTPConnect(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodOptions:
 		if hh, ok := h.handler.(OptionsHandler); ok {
 			hh.ServeHTTPOptions(w, r)
 			return
 		}
-		badRequest()
 	case http.MethodTrace:
 		if hh, ok := h.handler.(TraceHandler); ok {
 			hh.ServeHTTPTrace(w, r)
 			return
 		}
-		badRequest()
-	default:
-		// Fall back to default for any other method.
-		h.handler.ServeHTTP(w, r)
 	}
+	// Fall back to default for no matching handler method or any
+	// other HTTP method.
+	h.handler.ServeHTTP(w, r)
 }
 
 // EOF
