@@ -41,7 +41,7 @@ func TestMethodHandler(t *testing.T) {
 		{
 			method:     http.MethodGet,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		}, {
 			method:     http.MethodHead,
 			statusCode: http.StatusBadRequest,
@@ -49,7 +49,7 @@ func TestMethodHandler(t *testing.T) {
 		}, {
 			method:     http.MethodPost,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		}, {
 			method:     http.MethodPut,
 			statusCode: http.StatusOK,
@@ -57,7 +57,7 @@ func TestMethodHandler(t *testing.T) {
 		}, {
 			method:     http.MethodPatch,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		}, {
 			method:     http.MethodDelete,
 			statusCode: http.StatusNoContent,
@@ -65,15 +65,15 @@ func TestMethodHandler(t *testing.T) {
 		}, {
 			method:     http.MethodConnect,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		}, {
 			method:     http.MethodOptions,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		}, {
 			method:     http.MethodTrace,
 			statusCode: http.StatusBadRequest,
-			body:       "Bad Request",
+			body:       "bad request",
 		},
 	}
 	for i, test := range tests {
