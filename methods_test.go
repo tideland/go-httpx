@@ -16,7 +16,7 @@ import (
 	"testing"
 
 	"tideland.dev/go/audit/asserts"
-	"tideland.dev/go/audit/environments"
+	"tideland.dev/go/audit/web"
 	"tideland.dev/go/httpx"
 )
 
@@ -28,10 +28,7 @@ import (
 // MethodHandler.
 func TestMethodHandler(t *testing.T) {
 	assert := asserts.NewTesting(t, asserts.FailStop)
-	wa := startWebAsserter(assert)
-	defer wa.Close()
-
-	wa.Handle("/mh/", httpx.NewMethodHandler(metaHandler{}))
+	s := web.NewSimulator(httpx.NewMethodHandler(metaHandler{}))
 
 	tests := []struct {
 		method     string
@@ -78,10 +75,12 @@ func TestMethodHandler(t *testing.T) {
 	}
 	for i, test := range tests {
 		assert.Logf("test case #%d: %s", i, test.method)
-		wreq := wa.CreateRequest(test.method, "/mh/")
-		wresp := wreq.Do()
-		wresp.AssertStatusCodeEquals(test.statusCode)
-		wresp.AssertBodyMatches(test.body)
+		req, err := http.NewRequest(test.method, "/", nil)
+		assert.NoError(err)
+		resp, err := s.Do(req)
+		assert.NoError(err)
+		assert.Equal(resp.StatusCode(), test.statusCode)
+		assert.Contains(test.body, string(resp.Body()))
 	}
 }
 
@@ -95,7 +94,7 @@ type metaHandler struct{}
 
 func (h metaHandler) ServeHTTPPut(w http.ResponseWriter, r *http.Request) {
 	reply := "METHOD: " + r.Method + "!"
-	w.Header().Add(environments.HeaderContentType, environments.ContentTypePlain)
+	w.Header().Add(httpx.HeaderContentType, httpx.ContentTypePlain)
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write([]byte(reply)); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

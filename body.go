@@ -27,9 +27,9 @@ const (
 	HeaderAccept      = "Accept"
 	HeaderContentType = "Content-Type"
 
-	ContentTypeJSON = "application/json"
-	ContentTypeText = "text/plain"
-	ContentTypeXML  = "application/xml"
+	ContentTypeJSON  = "application/json"
+	ContentTypePlain = "text/plain"
+	ContentTypeXML   = "application/xml"
 )
 
 //--------------------
@@ -39,7 +39,7 @@ const (
 // ReadBody reads and unmarshals the body of the request into the given interface. It analyzes the
 // content type and uses the appropriate unmarshaler. Here it handles plain text, JSON, and XML. All
 // other content types are returned directly as byte slice.
-func ReadBody(r http.Request, v interface{}) error {
+func ReadBody(r *http.Request, v interface{}) error {
 	// Read content type and body.
 	contentType := r.Header.Get(HeaderContentType)
 	body, err := ioutil.ReadAll(r.Body)
@@ -54,7 +54,7 @@ func ReadBody(r http.Request, v interface{}) error {
 	switch contentType {
 	case ContentTypeJSON:
 		return json.Unmarshal(body, v)
-	case ContentTypeText:
+	case ContentTypePlain:
 		pv, ok := v.(*string) // Assume v is a string pointer.
 		if !ok {
 			return fmt.Errorf("ReadBody: v is not a string pointer")
@@ -85,12 +85,12 @@ func WriteBody(w http.ResponseWriter, contentType string, v interface{}) error {
 		}
 		w.Header().Set(HeaderContentType, ContentTypeJSON)
 		w.Write(body)
-	case ContentTypeText:
+	case ContentTypePlain:
 		s, ok := v.(string)
 		if !ok {
 			return fmt.Errorf("WriteBody: v is not a string")
 		}
-		w.Header().Set(HeaderContentType, ContentTypeText)
+		w.Header().Set(HeaderContentType, ContentTypePlain)
 		w.Write([]byte(s))
 	case ContentTypeXML:
 		body, err := xml.Marshal(v)

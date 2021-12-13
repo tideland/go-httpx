@@ -16,6 +16,7 @@ import (
 	"testing"
 
 	"tideland.dev/go/audit/asserts"
+	"tideland.dev/go/audit/web"
 	"tideland.dev/go/httpx"
 )
 
@@ -27,34 +28,28 @@ import (
 // nested handler w/o sub-handlers.
 func TestNestedMuxNoHandler(t *testing.T) {
 	assert := asserts.NewTesting(t, asserts.FailStop)
-	wa := startWebAsserter(assert)
-	defer wa.Close()
+	nmux := httpx.NewNestedMux("/")
 
-	nmux := httpx.NewNestedMux("/nmux")
+	s := web.NewSimulator(nmux)
 
-	wa.Handle("/nmux", nmux)
-
-	wreq := wa.CreateRequest(http.MethodGet, "/nmux")
-	wresp := wreq.Do()
-
-	wresp.AssertStatusCodeEquals(http.StatusNotFound)
-	wresp.AssertBodyMatches("")
+	req, err := http.NewRequest(http.MethodGet, "/", nil)
+	assert.NoError(err)
+	resp, err := s.Do(req)
+	assert.NoError(err)
+	assert.Equal(resp.StatusCode(), http.StatusNotFound)
 }
 
 // TestNestedMux tests the mapping of requests to a number of
 // nested individual handlers.
 func TestNestedMux(t *testing.T) {
 	assert := asserts.NewTesting(t, asserts.FailStop)
-	wa := startWebAsserter(assert)
-	defer wa.Close()
-
 	nmux := httpx.NewNestedMux("/api/")
-
-	wa.Handle("/api/", nmux)
 
 	nmux.Handle("foo", makeEchoHandler(assert, "foo"))
 	nmux.Handle("foo/bar", makeEchoHandler(assert, "bar"))
 	nmux.Handle("foo/baz", makeEchoHandler(assert, "baz"))
+
+	s := web.NewSimulator(nmux)
 
 	tests := []struct {
 		path       string
@@ -64,11 +59,11 @@ func TestNestedMux(t *testing.T) {
 		{
 			path:       "/",
 			statusCode: http.StatusNotFound,
-			body:       "",
+			body:       "404 page not found\n",
 		}, {
 			path:       "/api/foo/",
 			statusCode: http.StatusOK,
-			body:       "foo: GET /api/foo",
+			body:       "foo: GET /api/foo/",
 		}, {
 			path:       "/api/foo/4711",
 			statusCode: http.StatusOK,
@@ -92,15 +87,17 @@ func TestNestedMux(t *testing.T) {
 		}, {
 			path:       "/api/foo/4711/bar/1/nothingelse",
 			statusCode: http.StatusNotFound,
-			body:       "",
+			body:       "404 page not found\n",
 		},
 	}
 	for i, test := range tests {
 		assert.Logf("test case #%d: %s", i, test.path)
-		wreq := wa.CreateRequest(http.MethodGet, test.path)
-		wresp := wreq.Do()
-		wresp.AssertStatusCodeEquals(test.statusCode)
-		wresp.AssertBodyMatches(test.body)
+		req, err := http.NewRequest(http.MethodGet, test.path, nil)
+		assert.NoError(err)
+		resp, err := s.Do(req)
+		assert.NoError(err)
+		assert.Equal(resp.StatusCode(), test.statusCode)
+		assert.Match(string(resp.Body()), test.body)
 	}
 }
 
