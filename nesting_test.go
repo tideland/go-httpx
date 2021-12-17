@@ -36,7 +36,7 @@ func TestNestedMuxNoHandler(t *testing.T) {
 	assert.NoError(err)
 	resp, err := s.Do(req)
 	assert.NoError(err)
-	assert.Equal(resp.StatusCode(), http.StatusNotFound)
+	assert.Equal(resp.StatusCode, http.StatusNotFound)
 }
 
 // TestNestedMux tests the mapping of requests to a number of
@@ -96,8 +96,10 @@ func TestNestedMux(t *testing.T) {
 		assert.NoError(err)
 		resp, err := s.Do(req)
 		assert.NoError(err)
-		assert.Equal(resp.StatusCode(), test.statusCode)
-		assert.Match(string(resp.Body()), test.body)
+		assert.Equal(resp.StatusCode, test.statusCode)
+		body, err := web.BodyToString(resp)
+		assert.NoError(err)
+		assert.Contains(test.body, body)
 	}
 }
 

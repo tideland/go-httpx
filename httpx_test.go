@@ -19,7 +19,7 @@ import (
 )
 
 //--------------------
-// WEB ASSERTER AND HELPERS
+// HELPERS
 //--------------------
 
 // makeEchoHandler creates a handler echoing the HTTP method and the path.
@@ -32,6 +32,19 @@ func makeEchoHandler(assert *asserts.Asserts, id string) http.HandlerFunc {
 			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
+}
+
+// bufferedLogger simply collects the logged lines.
+type bufferedLogger struct {
+	lines []string
+}
+
+// Printf implements the logger interface.
+func (l *bufferedLogger) Printf(format string, args ...interface{}) {
+	line := fmt.Sprintf(format, args...)
+	l.lines = append(l.lines, line)
+
+	fmt.Println(line)
 }
 
 // EOF

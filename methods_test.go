@@ -79,8 +79,10 @@ func TestMethodHandler(t *testing.T) {
 		assert.NoError(err)
 		resp, err := s.Do(req)
 		assert.NoError(err)
-		assert.Equal(resp.StatusCode(), test.statusCode)
-		assert.Contains(test.body, string(resp.Body()))
+		assert.Equal(resp.StatusCode, test.statusCode)
+		body, err := web.BodyToString(resp)
+		assert.NoError(err)
+		assert.Contains(test.body, body)
 	}
 }
 

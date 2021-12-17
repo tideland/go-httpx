@@ -76,6 +76,13 @@ func NewJWTHandler(handler http.Handler, config *JWTHandlerConfig) *JWTHandler {
 	return h
 }
 
+// WrapJWT returns a wrapper for the JWT handler with the given configuration.
+func WrapJWT(config *JWTHandlerConfig) Wrapper {
+	return func(h http.Handler) http.Handler {
+		return NewJWTHandler(h, config)
+	}
+}
+
 // ServeHTTP implements the http.Handler interface. It checks for an existing
 // and valid token before calling the wrapped handler.
 func (h *JWTHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -131,7 +138,7 @@ func (h *JWTHandler) deny(w http.ResponseWriter, r *http.Request, msg string, st
 	}
 	accept := r.Header.Get(HeaderAccept)
 	w.WriteHeader(statusCode)
-	err := WriteBody(w, accept, feedback)
+	_, err := WriteBody(w, accept, feedback)
 	if err != nil {
 		h.logger.Printf("JWT handler: %v", err)
 	}

@@ -13,7 +13,9 @@ package httpx_test // import "tideland.dev/go/httpx"
 
 import (
 	"errors"
+	"log"
 	"net/http"
+	"os"
 	"testing"
 
 	"tideland.dev/go/audit/asserts"
@@ -29,13 +31,13 @@ import (
 // TestJWTHandler tests access control by usage of the JWTHandler.
 func TestJWTHandler(t *testing.T) {
 	assert := asserts.NewTesting(t, asserts.FailStop)
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	testhandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add(httpx.HeaderContentType, httpx.ContentTypePlain)
 		_, err := w.Write([]byte("request passed"))
 		assert.NoError(err)
 	})
-	jwtWrapper := httpx.NewJWTHandler(handler, &httpx.JWTHandlerConfig{
+	jwtwrapper := httpx.WrapJWT(&httpx.JWTHandlerConfig{
 		Key: []byte("secret"),
 		Gatekeeper: func(w http.ResponseWriter, r *http.Request, claims jwt.Claims) error {
 			access, ok := claims.GetString("access")
@@ -45,7 +47,9 @@ func TestJWTHandler(t *testing.T) {
 			return nil
 		},
 	})
-	s := web.NewSimulator(jwtWrapper)
+	logwrapper := httpx.WrapLogging(log.New(os.Stdout, "[test] ", log.LstdFlags))
+	handler := httpx.Wrap(testhandler, jwtwrapper, logwrapper)
+	s := web.NewSimulator(handler)
 
 	tests := []struct {
 		key         string
@@ -94,8 +98,10 @@ func TestJWTHandler(t *testing.T) {
 		}
 		resp, err := s.Do(req)
 		assert.NoError(err)
-		assert.Equal(resp.StatusCode(), test.statusCode)
-		assert.Contains(test.body, string(resp.Body()))
+		assert.Equal(resp.StatusCode, test.statusCode)
+		body, err := web.BodyToString(resp)
+		assert.NoError(err)
+		assert.Contains(test.body, body)
 	}
 }
 

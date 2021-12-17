@@ -27,15 +27,22 @@ type Logger interface {
 
 // LoggingHandler wraps a handler and logs the requests to it.
 type LoggingHandler struct {
-	logger  Logger
 	handler http.Handler
+	logger  Logger
 }
 
 // NewLoggingHandler creates a new logging handler with the given logger and handler.
-func NewLoggingHandler(logger Logger, handler http.Handler) *LoggingHandler {
+func NewLoggingHandler(handler http.Handler, logger Logger) *LoggingHandler {
 	return &LoggingHandler{
-		logger:  logger,
 		handler: handler,
+		logger:  logger,
+	}
+}
+
+// WrapLogging returns a wrapper for the logging handler with the given logger.
+func WrapLogging(logger Logger) Wrapper {
+	return func(h http.Handler) http.Handler {
+		return NewLoggingHandler(h, logger)
 	}
 }
 
