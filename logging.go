@@ -16,7 +16,7 @@ import (
 )
 
 //--------------------
-// IMPORTS
+// LOGGER
 //--------------------
 
 // Logger defines an interface for many different loggers. One of it

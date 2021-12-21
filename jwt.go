@@ -25,10 +25,12 @@ import (
 //--------------------
 
 // JWTHandlerConfig allows to control how the JWT handler works.
-// All values are optional. In this case tokens are only decoded
-// without using a cache, validated for the current time plus/minus
-// a minute leeway, and there's no user defined gatekeeper function
-// running afterwards.
+// Default values are:
+//  - Cache:      nil
+//  - Key:        nil
+//  - Leeway:     1 minute
+//  - Gatekeeper: nil
+//  - Logger:     log.Default()
 type JWTHandlerConfig struct {
 	Cache      *jwt.Cache
 	Key        jwt.Key
@@ -37,8 +39,13 @@ type JWTHandlerConfig struct {
 	logger     Logger
 }
 
-// JWTHandler checks for a valid token and then runs
-// a gatekeeper function.
+// JWTHandler checks for a valid JWT token for access control. It
+// decodes the token, validates it for the current time plus/minus
+// a configured leeway, and the user defined gatekeeper function
+// runs afterwards. Here for example checks can be done if the
+// owner of the token is allowed to access the resource addressed
+// by the request.
+
 type JWTHandler struct {
 	handler    http.Handler
 	cache      *jwt.Cache

@@ -113,7 +113,6 @@ func WriteBody(w http.ResponseWriter, contentType string, value interface{}) (in
 		w.Header().Set(HeaderContentType, contentType)
 		return w.Write(bs)
 	}
-	return 0, nil
 }
 
 // EOF
