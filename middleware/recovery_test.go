@@ -1,11 +1,11 @@
-// Tideland Go HTTP Extensions - Unit Tests
+// Tideland Go HTTP Extensions - Middleware - Unit Tests
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx_test // import "tideland.dev/go/httpx"
+package middleware_test // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
@@ -20,7 +20,7 @@ import (
 	"tideland.dev/go/audit/asserts"
 	"tideland.dev/go/audit/web"
 
-	"tideland.dev/go/httpx"
+	"tideland.dev/go/httpx/middleware"
 )
 
 //--------------------
@@ -36,20 +36,18 @@ func TestRecoveryHandler(t *testing.T) {
 		}
 		w.WriteHeader(http.StatusOK)
 	})
-	recoveringwrapper := httpx.WrapRecovering(log.New(os.Stdout, "[test] ", log.LstdFlags))
-	handler := httpx.Wrap(testhandler, recoveringwrapper)
+	recoveringwrapper := middleware.WrapRecovering(log.New(os.Stdout, "[test] ", log.LstdFlags))
+	handler := middleware.Wrap(testhandler, recoveringwrapper)
 	s := web.NewSimulator(handler)
 
 	// First a non-panic request.
-	req, err := http.NewRequest(http.MethodGet, "http://localhost:1234/all-fine/", nil)
-	assert.NoError(err)
+	req := s.CreateRequest(http.MethodGet, "http://localhost:1234/all-fine/", nil)
 	resp, err := s.Do(req)
 	assert.NoError(err)
 	assert.Equal(resp.StatusCode, http.StatusOK)
 
 	// And now one with a panic.
-	req, err = http.NewRequest(http.MethodGet, "http://localhost:1234/panic/", nil)
-	assert.NoError(err)
+	req = s.CreateRequest(http.MethodGet, "http://localhost:1234/panic/", nil)
 	resp, err = s.Do(req)
 	assert.NoError(err)
 	assert.Equal(resp.StatusCode, http.StatusInternalServerError)

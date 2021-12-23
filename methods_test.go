@@ -13,6 +13,7 @@ package httpx_test // import "tideland.dev/go/httpx"
 
 import (
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"tideland.dev/go/audit/asserts"
@@ -28,7 +29,8 @@ import (
 // MethodHandler.
 func TestMethodHandler(t *testing.T) {
 	assert := asserts.NewTesting(t, asserts.FailStop)
-	s := web.NewSimulator(httpx.NewMethodHandler(metaHandler{}))
+	ts := httptest.NewServer(httpx.NewMethodHandler(metaHandler{}))
+	defer ts.Close()
 
 	tests := []struct {
 		method     string
@@ -75,9 +77,9 @@ func TestMethodHandler(t *testing.T) {
 	}
 	for i, test := range tests {
 		assert.Logf("test case #%d: %s", i, test.method)
-		req, err := http.NewRequest(test.method, "/", nil)
+		req, err := http.NewRequest(test.method, ts.URL, nil)
 		assert.NoError(err)
-		resp, err := s.Do(req)
+		resp, err := http.DefaultClient.Do(req)
 		assert.NoError(err)
 		assert.Equal(resp.StatusCode, test.statusCode)
 		body, err := web.BodyToString(resp)

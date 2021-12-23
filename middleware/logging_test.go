@@ -1,23 +1,25 @@
-// Tideland Go HTTP Extensions - Unit Tests
+// Tideland Go HTTP Extensions - Middleware - Unit Tests
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx_test // import "tideland.dev/go/httpx"
+package middleware_test // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
 //--------------------
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 
 	"tideland.dev/go/audit/asserts"
 	"tideland.dev/go/audit/web"
-	"tideland.dev/go/httpx"
+
+	"tideland.dev/go/httpx/middleware"
 )
 
 //--------------------
@@ -31,8 +33,8 @@ func TestLoggingHandler(t *testing.T) {
 	testhandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	logwrapper := httpx.WrapLogging(logger)
-	handler := httpx.Wrap(testhandler, logwrapper)
+	logwrapper := middleware.WrapLogging(logger)
+	handler := middleware.Wrap(testhandler, logwrapper)
 	s := web.NewSimulator(handler)
 
 	for i := 0; i < 5; i++ {
@@ -48,3 +50,22 @@ func TestLoggingHandler(t *testing.T) {
 		assert.Equal(line, "GET /")
 	}
 }
+
+//--------------------
+// HELPER
+//--------------------
+
+// bufferedLogger simply collects the logged lines.
+type bufferedLogger struct {
+	lines []string
+}
+
+// Printf implements the logger interface.
+func (l *bufferedLogger) Printf(format string, args ...interface{}) {
+	line := fmt.Sprintf(format, args...)
+	l.lines = append(l.lines, line)
+
+	fmt.Println(line)
+}
+
+// EOF

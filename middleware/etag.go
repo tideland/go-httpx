@@ -1,11 +1,11 @@
-// Tideland Go HTTP Extension
+// Tideland Go HTTP Extension - Middleware
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx // import "tideland.dev/go/httpx"
+package middleware // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
@@ -13,6 +13,15 @@ package httpx // import "tideland.dev/go/httpx"
 
 import (
 	"net/http"
+)
+
+//--------------------
+// CONSTANTS
+//--------------------
+
+const (
+	HeaderETag        = "etag"
+	HeaderIfNoneMatch = "If-None-Match"
 )
 
 //--------------------
@@ -46,9 +55,9 @@ func WrapETag(etag string) Wrapper {
 
 // ServeHTTP implements the http.Handler interface.
 func (h *ETagHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("ETag", h.etag)
+	w.Header().Set(HeaderETag, h.etag)
 	if r.Method == http.MethodGet {
-		etag := r.Header.Get("If-None-Match")
+		etag := r.Header.Get(HeaderIfNoneMatch)
 		if etag == h.etag {
 			w.WriteHeader(http.StatusNotModified)
 			return

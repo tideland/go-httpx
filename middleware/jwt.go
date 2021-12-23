@@ -1,11 +1,11 @@
-// Tideland Go HTTP Extensions
+// Tideland Go HTTP Extensions - Middleware
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx // import "tideland.dev/go/httpx"
+package middleware // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
@@ -18,6 +18,8 @@ import (
 	"time"
 
 	"tideland.dev/go/jwt"
+
+	"tideland.dev/go/httpx"
 )
 
 //--------------------
@@ -143,9 +145,9 @@ func (h *JWTHandler) deny(w http.ResponseWriter, r *http.Request, msg string, st
 		"statusCode": strconv.Itoa(statusCode),
 		"message":    msg,
 	}
-	accept := r.Header.Get(HeaderAccept)
+	accept := r.Header.Get(httpx.HeaderAccept)
 	w.WriteHeader(statusCode)
-	_, err := WriteBody(w, accept, feedback)
+	_, err := httpx.WriteBody(w, accept, feedback)
 	if err != nil {
 		h.logger.Printf("JWT handler: %v", err)
 	}

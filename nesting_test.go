@@ -17,6 +17,7 @@ import (
 
 	"tideland.dev/go/audit/asserts"
 	"tideland.dev/go/audit/web"
+
 	"tideland.dev/go/httpx"
 )
 
@@ -92,8 +93,7 @@ func TestNestedMux(t *testing.T) {
 	}
 	for i, test := range tests {
 		assert.Logf("test case #%d: %s", i, test.path)
-		req, err := http.NewRequest(http.MethodGet, test.path, nil)
-		assert.NoError(err)
+		req := s.CreateRequest(http.MethodGet, test.path, nil)
 		resp, err := s.Do(req)
 		assert.NoError(err)
 		assert.Equal(resp.StatusCode, test.statusCode)

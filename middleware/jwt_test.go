@@ -1,11 +1,11 @@
-// Tideland Go HTTP Extensions - Unit Tests
+// Tideland Go HTTP Extensions - Middleware - Unit Tests
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx_test // import "tideland.dev/go/httpx"
+package middleware_test // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
@@ -20,8 +20,10 @@ import (
 
 	"tideland.dev/go/audit/asserts"
 	"tideland.dev/go/audit/web"
-	"tideland.dev/go/httpx"
 	"tideland.dev/go/jwt"
+
+	"tideland.dev/go/httpx"
+	"tideland.dev/go/httpx/middleware"
 )
 
 //--------------------
@@ -37,7 +39,7 @@ func TestJWTHandler(t *testing.T) {
 		_, err := w.Write([]byte("request passed"))
 		assert.NoError(err)
 	})
-	jwtwrapper := httpx.WrapJWT(&httpx.JWTHandlerConfig{
+	jwtwrapper := middleware.WrapJWT(&middleware.JWTHandlerConfig{
 		Key: []byte("secret"),
 		Gatekeeper: func(w http.ResponseWriter, r *http.Request, claims jwt.Claims) error {
 			access, ok := claims.GetString("access")
@@ -47,8 +49,8 @@ func TestJWTHandler(t *testing.T) {
 			return nil
 		},
 	})
-	logwrapper := httpx.WrapLogging(log.New(os.Stdout, "[test] ", log.LstdFlags))
-	handler := httpx.Wrap(testhandler, jwtwrapper, logwrapper)
+	logwrapper := middleware.WrapLogging(log.New(os.Stdout, "[test] ", log.LstdFlags))
+	handler := middleware.Wrap(testhandler, jwtwrapper, logwrapper)
 	s := web.NewSimulator(handler)
 
 	tests := []struct {
@@ -86,8 +88,7 @@ func TestJWTHandler(t *testing.T) {
 	}
 	for i, test := range tests {
 		assert.Logf("test case #%d: %s / %s", i, test.key, test.accessClaim)
-		req, err := http.NewRequest(http.MethodGet, "/", nil)
-		assert.NoError(err)
+		req := s.CreateRequest(http.MethodGet, "/", nil)
 		req.Header.Add(httpx.HeaderAccept, httpx.ContentTypeJSON)
 		if test.key != "" && test.accessClaim != "" {
 			claims := jwt.NewClaims()

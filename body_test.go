@@ -20,6 +20,7 @@ import (
 
 	"tideland.dev/go/audit/asserts"
 	"tideland.dev/go/audit/web"
+
 	"tideland.dev/go/httpx"
 )
 
@@ -74,8 +75,7 @@ func TestReadBody(t *testing.T) {
 	}
 	for i, test := range tests {
 		assert.Logf("test %d: %s", i, test.name)
-		req, err := http.NewRequest(http.MethodPost, "/", test.body)
-		assert.NoError(err)
+		req := s.CreateRequest(http.MethodPost, "/", test.body)
 		req.Header.Set("Content-Type", test.contentType)
 
 		resp, err := s.Do(req)

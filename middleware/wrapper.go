@@ -1,17 +1,19 @@
-// Tideland Go HTTP Extensions
+// Tideland Go HTTP Extensions - Middleware
 //
 // Copyright (C) 2020-2021 Frank Mueller / Tideland / Oldenburg / Germany
 //
 // All rights reserved. Use of this source code is governed
 // by the new BSD license.
 
-package httpx // import "tideland.dev/go/httpx"
+package middleware // import "tideland.dev/go/httpx/middleware"
 
 //--------------------
 // IMPORTS
 //--------------------
 
-import "net/http"
+import (
+	"net/http"
+)
 
 //--------------------
 // WRAPPER
