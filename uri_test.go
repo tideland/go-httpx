@@ -80,9 +80,9 @@ func TestPathToResources(t *testing.T) {
 
 	for _, test := range tests {
 		assert.Logf("test %q", test.name)
-		r, err := http.NewRequest("GET", test.url, nil)
+		req, err := http.NewRequest("GET", test.url, nil)
 		assert.NoError(err)
-		ress := httpx.PathToResources(r, test.prefix)
+		ress := httpx.PathToResources(req, test.prefix)
 		assert.Length(ress, len(test.ress))
 		for i, res := range ress {
 			assert.Equal(res.Name, test.ress[i].Name)

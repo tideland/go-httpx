@@ -38,9 +38,7 @@ func TestLoggingHandler(t *testing.T) {
 	s := web.NewSimulator(handler)
 
 	for i := 0; i < 5; i++ {
-		req, err := http.NewRequest(http.MethodGet, "http://localhost:12345/", nil)
-		assert.NoError(err)
-		resp, err := s.Do(req)
+		resp, err := s.Get("http://localhost:1234/")
 		assert.NoError(err)
 		assert.Equal(resp.StatusCode, http.StatusOK)
 	}

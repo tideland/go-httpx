@@ -36,14 +36,13 @@ func TestETag(t *testing.T) {
 	s := web.NewSimulator(handler)
 
 	// Without an If-None-Match header.
-	req := s.CreateRequest(http.MethodGet, "http://localhost:1234/", nil)
-	resp, err := s.Do(req)
+	resp, err := s.Get("http://localhost:1234/")
 	assert.NoError(err)
 	assert.Equal(resp.StatusCode, http.StatusOK)
 	assert.Equal(resp.Header.Get(middleware.HeaderETag), "ABC123")
 
 	// With a non-matching If-None-Match header.
-	req = s.CreateRequest(http.MethodGet, "http://localhost:1234/", nil)
+	req := s.CreateRequest(http.MethodGet, "http://localhost:1234/", nil)
 	req.Header.Set(middleware.HeaderIfNoneMatch, "321CBA")
 	resp, err = s.Do(req)
 	assert.NoError(err)

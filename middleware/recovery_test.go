@@ -41,14 +41,12 @@ func TestRecoveryHandler(t *testing.T) {
 	s := web.NewSimulator(handler)
 
 	// First a non-panic request.
-	req := s.CreateRequest(http.MethodGet, "http://localhost:1234/all-fine/", nil)
-	resp, err := s.Do(req)
+	resp, err := s.Get("http://localhost:1234/all-fine/")
 	assert.NoError(err)
 	assert.Equal(resp.StatusCode, http.StatusOK)
 
 	// And now one with a panic.
-	req = s.CreateRequest(http.MethodGet, "http://localhost:1234/panic/", nil)
-	resp, err = s.Do(req)
+	resp, err = s.Get("http://localhost:1234/panic/")
 	assert.NoError(err)
 	assert.Equal(resp.StatusCode, http.StatusInternalServerError)
 	body, err := web.BodyToString(resp)
