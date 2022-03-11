@@ -81,7 +81,7 @@ func TestThrottle(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			assert.SetFailable(t)
-			throttlewrapper := middleware.WrapThrottle(limit, test.timeout, log.Default())
+			throttlewrapper := middleware.WrapTimeoutThrottle(limit, test.timeout, log.Default())
 			handler := middleware.Wrap(testhandler, throttlewrapper)
 			sim := web.NewSimulator(handler)
 			sleep := time.Second / time.Duration(test.rps)
