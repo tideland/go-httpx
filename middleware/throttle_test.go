@@ -49,9 +49,9 @@ func TestThrottle(t *testing.T) {
 		{
 			name:    "less-requests-than-limit",
 			rps:     3,
-			reqs:    15,
-			respOK:  15,
-			seconds: 5 * time.Second,
+			reqs:    9,
+			respOK:  9,
+			seconds: 3 * time.Second,
 		},
 		{
 			name:    "requests-matching-limit",
@@ -63,18 +63,26 @@ func TestThrottle(t *testing.T) {
 		{
 			name:    "more-requests-than-limit",
 			rps:     20,
-			reqs:    50,
-			respOK:  50,
-			seconds: 10 * time.Second,
+			reqs:    25,
+			respOK:  25,
+			seconds: 5 * time.Second,
 		},
 		{
-			name:            "timeout",
+			name:            "short-timeout",
 			timeout:         20 * time.Millisecond,
 			rps:             20,
 			reqs:            60,
 			respOK:          15,
 			respUnavailable: 45,
 			seconds:         3 * time.Second,
+		},
+		{
+			name:    "long-timeout",
+			timeout: time.Second,
+			rps:     20,
+			reqs:    25,
+			respOK:  25,
+			seconds: 5 * time.Second,
 		},
 	}
 	// Run tests.
