@@ -19,7 +19,8 @@ import (
 // WRAPPER
 //--------------------
 
-// Wrapper defines a function wrapping a handler with another handler.
+// Wrapper defines any function able to wrap a handler with another handler.
+// Most of them will be a stack of non-functional handlers around a functional one.
 type Wrapper func(h http.Handler) http.Handler
 
 // Wrap wraps the given handler with all listed wrappers. So it returns
