@@ -78,8 +78,8 @@ type TraceHandler interface {
 //--------------------
 
 // MethodHandler wraps a http.Handler implementing also individual httpx handler
-// interfaces. It distributes the requests to the handler methods based on a type
-// switch In case of no matching method a http.ErrMethodNotAllowed is returned.
+// interfaces. It distributes the requests to the handler methods if those are
+// implemented.
 type MethodHandler struct {
 	handler http.Handler
 }
@@ -91,7 +91,9 @@ func NewMethodHandler(h http.Handler) *MethodHandler {
 	}
 }
 
-// ServeHTTP implements the http.Handler interface.
+// ServeHTTP implements the http.Handler interface. If the wrapped handler implements
+// the matching interface for the HTTP request method the according ServeHTTP<method>()
+// method will be called. Other it simply calls the default ServeHTTP() method.
 func (h *MethodHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
