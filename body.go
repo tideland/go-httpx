@@ -39,7 +39,7 @@ const (
 // ReadBody reads and unmarshals the body of the request into the given interface. It analyzes the
 // content type and uses the appropriate unmarshaler. Here it handles plain text, JSON, and XML. All
 // other content types are returned directly as byte slice.
-func ReadBody(r *http.Request, value interface{}) error {
+func ReadBody(r *http.Request, value any) error {
 	// Read content type and body.
 	contentType := r.Header.Get(HeaderContentType)
 	body, err := ioutil.ReadAll(r.Body)
@@ -81,7 +81,7 @@ func ReadBody(r *http.Request, value interface{}) error {
 // WriteBody writes the given value to the response writer. It analyzes the content type and uses the
 // the appropriate encoding. Here it handles plain text, JSON, and XML. All other content types are
 // written directly as byte slice.
-func WriteBody(w http.ResponseWriter, contentType string, value interface{}) (int, error) {
+func WriteBody(w http.ResponseWriter, contentType string, value any) (int, error) {
 	// Marshal based on content type.
 	switch contentType {
 	case ContentTypeJSON:

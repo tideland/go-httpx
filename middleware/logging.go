@@ -22,7 +22,7 @@ import (
 // Logger defines an interface for many different loggers. One of it
 // is the standard logger log.Logger.
 type Logger interface {
-	Printf(format string, v ...interface{})
+	Printf(format string, v ...any)
 }
 
 // LoggingHandler wraps a handler and logs the requests to it.

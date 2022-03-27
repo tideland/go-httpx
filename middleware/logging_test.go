@@ -59,7 +59,7 @@ type bufferedLogger struct {
 }
 
 // Printf implements the logger interface.
-func (l *bufferedLogger) Printf(format string, args ...interface{}) {
+func (l *bufferedLogger) Printf(format string, args ...any) {
 	line := fmt.Sprintf(format, args...)
 	l.lines = append(l.lines, line)
 
